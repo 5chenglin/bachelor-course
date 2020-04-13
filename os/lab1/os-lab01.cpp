@@ -60,7 +60,7 @@ int Schedule::total_time = 0;
 int Schedule::total_waiting = 0;
 
 void Schedule::input_JCB() {
-    ifstream in("process.txt");
+    ifstream in("job.txt");
     JCB temp;
     while (!in.eof()) {
         in >> temp.id >> temp.arrive_time >> temp.serve_time;
