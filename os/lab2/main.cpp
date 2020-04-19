@@ -2,7 +2,7 @@
  * @Author: Chenglin Wu
  * @Date:   2020-04-18 07:45:54
  * @Last Modified by:   Chenglin Wu
- * @Last Modified time: 2020-04-18 09:10:07
+ * @Last Modified time: 2020-04-19 23:51:10
  */
 #include <algorithm>
 #include <fstream>
@@ -54,14 +54,19 @@ class Schedule {
     struct serve_time_Sort {
         bool operator()(const list<PCB>::iterator a,
                         const list<PCB>::iterator b) {
-            return a->priority > b->priority;
+            if (a->priority == b->priority) {
+                //                if (a->arrive_time == b->arrive_time)
+                return a->id > b->id;
+                //                return a->serve_temp > b->serve_temp;
+            }
+            return a->priority < b->priority;
         }
     };
     /// @brief 打印单个运行时的PCB信息
     static void show_single_running_JCB(const list<PCB>::iterator p) {
-        cout << "作业名称：" << p->id << "执行时间：" << total_time
-             << "剩余服务时间：" << p->serve_temp << "剩余优先权："
-             << p->priority << "状态：" << p->status << "（将要运行时）"
+        cout << "作业名称：" << p->id << " 执行时间：" << total_time
+             << " 剩余服务时间：" << p->serve_temp << " 剩余优先权："
+             << p->priority << " 状态：" << p->status << "（将要运行时）"
              << endl;
     }
 
@@ -69,9 +74,9 @@ class Schedule {
     static void show_single_waiting_JCB(const list<PCB>::iterator p,
                                         int transfer_time   = -1,
                                         double average_time = -1) {
-        cout << "作业名称：" << p->id << "执行时间：" << total_time
-             << "剩余服务时间：" << p->serve_temp << "剩余优先权："
-             << p->priority << "状态：" << p->status << "（一个时间片结束后）"
+        cout << "作业名称：" << p->id << " 执行时间：" << total_time
+             << " 剩余服务时间：" << p->serve_temp << " 剩余优先权："
+             << p->priority << " 状态：" << p->status << "（一个时间片结束后）"
              << endl;
     }
 
@@ -81,7 +86,9 @@ class Schedule {
                                          double average_time = -1) {
         cout << "作业名称：" << p->id << " 到达时间：" << p->arrive_time
              << " 服务时间：" << p->serve_time << " 剩余优先权：" << p->priority
-             << "状态：" << p->status << "（一个时间片结束后）" << endl;
+             << " 周转时间： " << transfer_time << " 带权周转时间： "
+             << average_time << " 状态：" << p->status << "（进程终止后）"
+             << endl;
     }
 
    private:
@@ -130,8 +137,8 @@ void Schedule::show_PCB_info() {
     if (!Queue.empty()) {
         for (auto p : Queue)
             cout << "作业名称：" << p.id << " 到达时间：" << p.arrive_time
-                 << " 服务时间：" << p.serve_time << " 状态：" << p.status
-                 << endl;
+                 << " 服务时间：" << p.serve_time << " 优先权：" << p.priority
+                 << " 状态：" << p.status << endl;
     } else  //进程队列中无进程
         cout << "there is no job" << endl;
 }
@@ -147,7 +154,11 @@ void Schedule::HPF() {
     waitingQueue.clear();  //清空等待队列
     //遍历所有进程，找出状态为 W 的进程，放入等待队列
     for (auto it = Queue.begin(); it != Queue.end(); ++it) {
-        if ((*it).status == 'W') { waitingQueue.emplace_back(it); }
+        if ((*it).status == 'W') {
+            //            cout << "before it address: " << (*it).id << " " <<
+            //            &*it << endl;
+            waitingQueue.emplace_back(it);
+        }
     }
     //对等待队列按照到达时间排序
     sort(waitingQueue.begin(), waitingQueue.end(), arrive_time_Sort);
@@ -163,25 +174,45 @@ void Schedule::HPF() {
         //按照当前时间找已经到达的进程，然后将进程状态改为 R ，放入待执行队列
         for (auto &cur : waitingQueue) {
             if (cur->arrive_time <= total_time && cur->status == 'W') {
+                //                cout << "it address: " << (*cur).id << " " <<
+                //                &*cur << endl;
                 cur->status = 'R';
+                //                cout << "---" << endl;
+                //                show_single_running_JCB(cur);
+                //                cout << "---" << endl;
                 executingQueue.push(cur);
             }
         }
         // 处理待执行队列中的进程，处理完一个进程后，计算对应的周转时间和带权周转时间，然后跳出循环。
         if (!executingQueue.empty()) {
-            auto &cur = executingQueue.top();
+            auto cur = executingQueue.top();
             executingQueue.pop();
-            show_single_running_JCB(cur);
-            cur->serve_temp--;
-            cur->priority--;
-            total_time++;
-            cur->status = 'W';
-            show_single_waiting_JCB(cur);
-            if(cur->serve_temp==0){
-                total_waiting--;//每完成一个进程，总数减一
-                int trans = total_time - cur->arrive_time;
-                double ave = 1.0*trans/cur->serve_time;
+            if (cur->serve_temp == 0) {
+                //                cout << "it address: " << (*cur).id << &*cur
+                //                << endl;
+                cur->status = 'F';
+                total_waiting--;  //每完成一个进程，总数减一
+                int trans  = total_time - cur->arrive_time;
+                double ave = 1.0 * trans / cur->serve_time;
                 show_single_finished_JCB(cur, trans, ave);
+            } else {
+                //                cout<<"it address: "<< (*cur).id<<&*cur
+                //                <<endl;
+                show_single_running_JCB(cur);
+                cur->serve_temp--;
+                cur->priority--;
+                total_time++;
+                cur->status = 'W';
+                show_single_waiting_JCB(cur);
+                if (cur->serve_temp == 0) {
+                    //                cout << "it address: " << (*cur).id << &*cur
+                    //                << endl;
+                    cur->status = 'F';
+                    total_waiting--;//每完成一个进程，总数减一
+                    int trans = total_time - cur->arrive_time;
+                    double ave = 1.0*trans/cur->serve_time;
+                    show_single_finished_JCB(cur, trans, ave);
+                }
             }
         }
 
