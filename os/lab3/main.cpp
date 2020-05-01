@@ -2,7 +2,7 @@
  * @Author: Chenglin Wu
  * @Date:   2020-04-30 01:45:00
  * @Last Modified by:   Chenglin Wu
- * @Last Modified time: 2020-05-01 16:44:29
+ * @Last Modified time: 2020-05-01 17:38:11
  */
 #include <algorithm>
 #include <iomanip>
@@ -40,7 +40,7 @@ class memory {
     void BF(const string &_name, const int &_size,
             const int num = -1);  // best fit
 
-    bool disply_menue();
+    bool display_menu();
     void recycle(const string &_name);
     void show();
     struct addr {
@@ -105,7 +105,7 @@ void memory::NF(const string &_name, const int &_size, const int num) {
     empty_table.sort(addr);
 }
 void memory::BF(const string &_name, const int &_size, const int num) {
-    empty_table.sort(addr);
+    empty_table.sort(size);
     pos = empty_table.begin();
     if (alloc(pos, _name, _size))
         cout << "the " << (num == -1 ? used_table.size() + 1 : num)
@@ -204,10 +204,10 @@ void memory::input() {
         }
         switch_(name, _size, i);
     }
-    while (disply_menue()) {}
+    while (display_menu()) {}
 }
 
-bool memory::disply_menue() {
+bool memory::display_menu() {
     cout << "Choose an operation." << endl;
     cout << "(0) recycle a job\n(1) show the memory\n(2) add a job" << endl;
     int op;
@@ -246,6 +246,8 @@ void memory::recycle(const string &_name) {
     for (auto i = used_table.begin(); i != used_table.end(); i++) {
         if (i->name == _name) {
             empty_table.sort(addr);
+            cout << "### Before:" << endl;
+            show();
             for (auto j = empty_table.begin(); j != empty_table.end(); j++) {
                 auto &last = j;
                 last++;
@@ -256,14 +258,17 @@ void memory::recycle(const string &_name) {
                     j->block_size += i->block_size + last->block_size;
                     j->status = false;
                     empty_table.erase(last);
+
                 } else if (j->start_pos + j->block_size == i->start_pos) {
                     j->block_size += i->block_size;
                     j->status = false;
+
                 } else if (last != empty_table.end() &&
                            last->start_pos == i->start_pos + i->block_size) {
                     last->start_pos = i->start_pos;
                     last->block_size += i->block_size;
                     last->status = false;
+
                 } else {
                     empty_table.emplace_back(i->block_size, i->start_pos,
                                              false);
@@ -271,6 +276,8 @@ void memory::recycle(const string &_name) {
                 used_table.erase(i);
                 break;
             }
+            cout << "### After:" << endl;
+            show();
             return;
         }
     }
@@ -304,3 +311,4 @@ int main() {
 
     return 0;
 }
+
