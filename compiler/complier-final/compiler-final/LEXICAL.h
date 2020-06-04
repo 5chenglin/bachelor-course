@@ -1,12 +1,12 @@
 #pragma once
 #include <cstring>
-#include <string>
 #include <iostream>
+#include <string>
 using namespace std;
 #ifndef LEXICAL_H_INCLUDED
 #define LEXICAL_H_INCLUDED
-class LEXICAL{
-public:
+class LEXICAL {
+   public:
     void cifafenxi();
     void scaner1();
     char prog1[80], token1[8], ch1;
@@ -16,12 +16,41 @@ public:
 
 void LEXICAL::cifafenxi() {
     p1 = 0;
-    printf(" ------------------Welcome!!!(词法分析)-----------------");
-    printf("\n please input a string(end with '#'):/n");
-    do {
-        scanf("%c", &ch1);
-        prog1[p1++] = ch1;
-    } while (ch1 != '#');
+    cout << "\t\t【词法分析】" << endl;
+    cout << "\t\t请选择输入源程序的方式：\n\t\t(0) "
+            "程序框输入：直接输入源代码。\n\t\t(1) "
+            "文件输入：将源程序保存在[source_code.txt]文件中。\n\t\t(others) "
+            "Exit."
+         << endl;
+    cout << "\t\t[warning]请确保以'#'结束！" << endl;
+    int option = 1;
+    cin >> option;
+    switch (option) {
+        case 0: {
+            cout << "请输入：" << endl;
+            do {
+                scanf("%c", &ch1);
+                prog1[p1++] = ch1;
+            } while (ch1 != '#');
+            break;
+        }
+        case 1: {
+            ifstream fin("source_code.txt");
+            string str, sumstr;
+            while (fin >> str) {
+                sumstr += str;
+                if (str[str.length() - 1] == '#') break;
+            }
+            for (int i = 0; i < sumstr.length(); i++) {
+                prog1[p1++] = sumstr[i];
+            }
+            break;
+        }
+        default: {
+            cout << "\t\t[info]:程序已终止！" << endl;
+            exit(0);
+        }
+    }
     p1 = 0;
     do {
         scaner1();

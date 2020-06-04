@@ -1,14 +1,14 @@
 #pragma once
 #include <bits/stdc++.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 using namespace std;
 #ifndef SEMANTIC_H_INCLUDED
 #define SEMANTIC_H_INCLUDED
 
 
-class SEMANTIC{
-public:
+class SEMANTIC {
+   public:
     void zhongjiandaima();
     void scaner1();
     void lrparser();
@@ -78,8 +78,7 @@ void SEMANTIC::lrparser() {
 }
 //<语句块> ::= '{'<语句串>'}'
 //语句块
-void SEMANTIC::staBlock(int *nChain)
-{
+void SEMANTIC::staBlock(int *nChain) {
     if (syn == 28)  //{
     {
         scanner();
@@ -94,8 +93,7 @@ void SEMANTIC::staBlock(int *nChain)
 }
 //<语句串>::=<语句>{;<语句>};
 //语句串
-void SEMANTIC::staString(int *nChain)
-{
+void SEMANTIC::staString(int *nChain) {
     sta(nChain);
     backpatch(*nChain, nextq);
     while (syn == 31)  //;
@@ -106,16 +104,14 @@ void SEMANTIC::staString(int *nChain)
     // backpatch(*nChain,nextq-1);
 }
 //语句
-void SEMANTIC::sta(int *nChain)
-{
+void SEMANTIC::sta(int *nChain) {
     if (syn == 10) {
         fuzhi();
         //*nChain=0;
-    } else if (syn == 6)
-    {   // if
+    } else if (syn == 6) {  // if
         tiaojian(nChain);
-    } else if (syn == 8)  {
-// do
+    } else if (syn == 8) {
+        // do
         xunhuan();
     }
 }
@@ -128,8 +124,7 @@ void SEMANTIC::tiaojian(int *nChain) {
     {
         scanner();
         // strcpy(num1,E());
-        if (syn == 26)
-        {
+        if (syn == 26) {
             //(
             scanner();
             strcpy(num1, E());
@@ -169,8 +164,7 @@ void SEMANTIC::tiaojian(int *nChain) {
             //第一个 0 已回填
             backpatch(ntc, nextq);  // ntc 链接的所有四元式都回填 nextq
         }
-        if (syn == 27)  {
-            //)
+        if (syn == 27) {  // )
             scanner();
         }
         staBlock(&nChainTemp);  //语句块
@@ -181,16 +175,15 @@ void SEMANTIC::tiaojian(int *nChain) {
 void SEMANTIC::xunhuan() {
     char res[10], num1[10], num2[10], op[10];
     int nChainTemp;
-    if (syn == 8)
-    {
+    if (syn == 8) {
         // do
         nnc = nextq;  //记住 if 语句位置，emit 之后 nextq 就变了
         // emit("0","if",num1,"goto");
         scanner();
         staBlock(&nChainTemp);  //语句块
-        if (syn == 9){// while
+        if (syn == 9) {         // while
             scanner();
-            if (syn == 26){//(
+            if (syn == 26) {  //(
                 scanner();
                 strcpy(num1, E());
                 if ((syn <= 37) && (syn >= 32)) {
@@ -228,7 +221,7 @@ void SEMANTIC::xunhuan() {
                 emit("0", "", "", "goto");
                 backpatch(nna, nextq);
             }
-            if (syn == 27){// )
+            if (syn == 27) {  // )
 
                 scanner();
             }
@@ -237,11 +230,11 @@ void SEMANTIC::xunhuan() {
 }
 void SEMANTIC::fuzhi()  // 赋值语句只有 1 个操作数
 {
-    char res[10], num[10];  // num 操作数
-    if (syn == 10){ // 字符串
+    char res[10], num[10];   // num 操作数
+    if (syn == 10) {         // 字符串
         strcpy(res, token);  // 结果
         scanner();
-        if (syn == 21){//=
+        if (syn == 21) {  // =
             scanner();
             strcpy(num, E());
             emit(res, num, "=", "");
@@ -251,16 +244,15 @@ void SEMANTIC::fuzhi()  // 赋值语句只有 1 个操作数
     }
 }
 // Expression 表达式
-char* SEMANTIC::E()
-{
+char *SEMANTIC::E() {
     char *res, *num1, *op, *num2;
     res  = (char *) malloc(10);
     num1 = (char *) malloc(10);
     op   = (char *) malloc(10);
     num2 = (char *) malloc(10);
     strcpy(num1, T());
-    while ((syn == 22) || (syn == 23)){ // + -
-        if (syn == 22)  //+
+    while ((syn == 22) || (syn == 23)) {  // + -
+        if (syn == 22)                    // +
             strcpy(op, "+");
         else
             strcpy(op, "-");
@@ -273,14 +265,14 @@ char* SEMANTIC::E()
     return num1;
 }
 // Term项
-char* SEMANTIC::T(){
+char *SEMANTIC::T() {
     char *res, *num1, *op, *num2;
     res  = (char *) malloc(10);
     num1 = (char *) malloc(10);
     op   = (char *) malloc(10);
     num2 = (char *) malloc(10);
     strcpy(num1, F());
-    while ((syn == 24) || (syn == 25)) { // * /
+    while ((syn == 24) || (syn == 25)) {  // * /
         if (syn == 24)
             strcpy(op, "*");
         else
@@ -294,21 +286,22 @@ char* SEMANTIC::T(){
     return num1;
 }
 // Factor 因子
-char* SEMANTIC::F(){
+char *SEMANTIC::F() {
     char *res;
     res = (char *) malloc(10);
-    if (syn == 10) { // 字符串
+    if (syn == 10) {  // 字符串
         strcpy(res, token);
         scanner();
-    } else if (syn == 20) { // 二进制数
-        //itoa((int) sum, res, 10);  // 整数转换为字符串
-        int summ = sum;
-        sscanf(res, "%d", summ);
+    } else if (syn == 20) {  // 二进制数
+        // itoa((int) sum, res, 10);  // 整数转换为字符串
+        int summ = sum + 0.5;
+        //        cout<<"test***"<<sum<<"***test"<<endl;
+        sprintf(res, "%d", summ);
         scanner();
-    } else if (syn == 26) { // (
+    } else if (syn == 26) {  // (
         scanner();
         res = E();
-        if (syn == 27) { // )
+        if (syn == 27) {  //  )
             scanner();
         } else
             isError = 1;
@@ -316,23 +309,24 @@ char* SEMANTIC::F(){
         isError = 1;
     return res;
 }
-char* SEMANTIC::newTemp() {
+char *SEMANTIC::newTemp() {
     char *p;
     char varTemp[10];
     p = (char *) malloc(10);
     kk++;
-    sscanf(varTemp, "%d", kk);
-//    itoa(kk, varTemp, 10);
+    //    cout<<"test***"<<kk<<"***test"<<endl;
+    sprintf(varTemp, "%d", kk);
+
+    //    itoa(kk, varTemp, 10);
     strcpy(p + 1, varTemp);
     p[0] = 'T';
     return p;
 }
 //将 p 所链接的每个四元式的第四个分量都回填t
 void SEMANTIC::backpatch(int p, int t) {
-    if(p>20000)
-        return;
+    if (p > 20000) return;
     int w, circle = p;
-    while (circle) { // circle 不为 0 的时候
+    while (circle) {                       // circle 不为 0 的时候
         w = atoi(fourCom[circle].result);  //四元式 circle 第四分量内容
         // strcpy(fourCom[circle].result,t); //把 t 填进四元式 circle 的第四分量
         sprintf(fourCom[circle].result, "%d", t);
@@ -341,14 +335,13 @@ void SEMANTIC::backpatch(int p, int t) {
     return;
 }
 //合并 p1 和 p2
-int SEMANTIC::merge(int p1, int p2)
-{
+int SEMANTIC::merge(int p1, int p2) {
     char circle, nResult;
     if (p2 == 0)
         nResult = p1;
     else {
         nResult = circle = p2;
-        while (atoi(fourCom[circle].result)) { // 四元式第四个分量不为 0
+        while (atoi(fourCom[circle].result)) {  // 四元式第四个分量不为 0
             circle = atoi(fourCom[circle].result);
             // strcpy(fourCom[circle].result,p1);
             sprintf(fourCom[circle].result, "%s", p1);
@@ -390,7 +383,7 @@ void SEMANTIC::scanner() {
                 break;
             }
     } else if ((ch >= '0') && (ch <= '9')) {
-        IsNum:
+    IsNum:
         if (isSignal == 1) {
             // token[m++]='-';
         }
@@ -572,54 +565,89 @@ void SEMANTIC::zhongjiandaima() {
     index     = 0;
     repeat    = 0;
     kk        = 0;
-    printf("\nPlease input your source string:\n");
-    do {
-        ch        = getchar();
-        prog[p++] = ch;
-    } while (ch != '#');
+    cout << "\t\t【语义分析 中间代码生成 目标代码分析】" << endl;
+    cout << "\t\t请选择输入源程序的方式：\n\t\t(0) "
+            "程序框输入：直接输入源代码。\n\t\t(1) "
+            "文件输入：将源程序保存在[source_code.txt]文件中。\n\t\t(others) "
+            "Exit."
+         << endl;
+    cout << "\t\t[warning]请确保以'#'结束！" << endl;
+    int option = 1;
+    cin >> option;
+    switch (option) {
+        case 0: {
+            cout << "请输入：" << endl;
+            do {
+                ch        = getchar();
+                prog[p++] = ch;
+            } while (ch != '#');
+            break;
+        }
+        case 1: {
+            ifstream fin("source_code.txt");
+            string str, sumstr;
+            while (fin >> str) {
+                sumstr += str;
+                if (str[str.length() - 1] == '#') break;
+            }
+            for (int i = 0; i < sumstr.length(); i++) { prog[p++] = sumstr[i]; }
+            break;
+        }
+        default: {
+            cout << "\t\t[info]:程序已终止！" << endl;
+            exit(0);
+        }
+    }
+    //    printf("\nPlease input your source string:\n");
+    //    do {
+    //        ch        = getchar();
+    //        prog[p++] = ch;
+    //    } while (ch != '#');
     p       = 0;
     isError = 0;
     scanner();
     lrparser();
-    for(i=1; i<nextq; i++) { // 循环输出四元式
-        printf("(%3s, %3s ,%3s , %3s )\n",fourCom[i].opera,fourCom[i].arg1,fourCom[i].arg2,fourCom[i].result);
+    cout << "\n\t\t\t【四元式结果】" << endl;
+    for (i = 1; i < nextq; i++) {  // 循环输出四元式
+        printf("\t\t[%d] (%3s, %3s ,%3s , %3s )\n", i, fourCom[i].opera,
+               fourCom[i].arg1, fourCom[i].arg2, fourCom[i].result);
     }
-
+    cout << "\n\t\t\t【目标代码】" << endl;
     for (i = 1; i < nextq; i++)  // 循环输出四元式
     {
-        printf("\n%d\t", i);
+        printf("\n\t[%d]\t", i);
         printf("(%3s, %3s ,%3s , %3s )\n", fourCom[i].opera, fourCom[i].arg1,
                fourCom[i].arg2, fourCom[i].result);
         if (strcmp(fourCom[i].opera, "=") == 0) {
-            printf("Move AX,%1s\n", fourCom[i].arg1);
-            printf("Move %5s,Ax\n", fourCom[i].result);
+            printf("\tMOV AX, %1s\n", fourCom[i].arg1);
+            printf("\tMOV %s, AX\n", fourCom[i].result);
         }
         if (strcmp(fourCom[i].opera, "+") == 0) {
-            printf("Mov AX,%1s\n", fourCom[i].arg1);
-            printf("ADD Ax,%1s\n", fourCom[i].arg2);
-            printf("Mov %1s,Ax\n", fourCom[i].result);
+            printf("\tMOV AX, %1s\n", fourCom[i].arg1);
+            printf("\tADD AX, %1s\n", fourCom[i].arg2);
+            printf("\tMOV %1s, AX\n", fourCom[i].result);
         }
         if (strcmp(fourCom[i].opera, "-") == 0) {
-            printf("Mov AX,%1s\n", fourCom[i].arg1);
-            printf("SUB Ax,%1s\n", fourCom[i].arg2);
-            printf("Mov %1s,Ax\n", fourCom[i].result);
+            printf("\tMOV AX, %1s\n", fourCom[i].arg1);
+            printf("\tSUB AX, %1s\n", fourCom[i].arg2);
+            printf("\tMOV %1s, AX\n", fourCom[i].result);
         }
         if (strcmp(fourCom[i].opera, "*") == 0) {
-            printf("Mov AL,%1s\n", fourCom[i].arg1);
-            printf("MUL %1s\n", fourCom[i].arg2);
-            printf("Mov %1s,Ax\n", fourCom[i].result);
+            printf("\tMOV AL, %1s\n", fourCom[i].arg1);
+            printf("\tMUL %1s\n", fourCom[i].arg2);
+            printf("\tMOV %1s, AX\n", fourCom[i].result);
         }
         if (strcmp(fourCom[i].opera, "/") == 0) {
-            printf("Mov AX,%1s\n", fourCom[i].arg1);
-            printf("DIv %1s\n", fourCom[i].arg2);
-            printf("Mov %1s,AL\n", fourCom[i].result);
+            printf("\tMOV AX, %1s\n", fourCom[i].arg1);
+            printf("\tDIV %1s\n", fourCom[i].arg2);
+            printf("\tMOV %1s, AL\n", fourCom[i].result);
         }
         if (strcmp(fourCom[i].arg2, "goto") == 0) {
             if (strcmp(fourCom[i].arg1, "if") == 0) {
-                printf("cmp %1s\n", fourCom[i].opera);
-                printf("jnc %1s\n", fourCom[i].result);
+                printf("\tCMP %1s\n", fourCom[i].opera);
+                printf("\tJNC %1s\n", fourCom[i].result);
             } else {
-                printf("jmp %1s\n", fourCom[i].result);
+                printf("\tJMP %1s\n", fourCom[i].result);
             }
         }
     }

@@ -1,13 +1,13 @@
 #pragma once
 #include <cstring>
-#include <string>
 #include <iostream>
+#include <string>
 using namespace std;
 #ifndef SYNTACTIC_H_INCLUDED
 #define SYNTACTIC_H_INCLUDED
 
-class SYNTACTIC{
-public:
+class SYNTACTIC {
+   public:
     void yufafenxi();
     void Output_table();
     void Output_stack();
@@ -24,20 +24,18 @@ public:
     type ee, tt, gg, g1, ss, s1, fff, f1;
     type Table[10][10];  //预测分析表
     int j = 0, b = 0, top = 0, l;
-    string Pro[10] = {"E->TG",  "G->+TG", "G->-TG", "G->ε",   "T->FS",
-                      "S->*FS", "S->/FS", "S->ε",   "F->(E)", "F->i"};  //产生式集合
+    string Pro[10] = {"E->TG",  "G->+TG", "G->-TG", "G->ε", "T->FS", "S->*FS",
+                      "S->/FS", "S->ε",   "F->(E)", "F->i"};  //产生式集合
 };
 //输出分析栈
-void SYNTACTIC::Output_stack()
-{
+void SYNTACTIC::Output_stack() {
     int a;
     for (a = 0; a <= top + 1; a++) printf("%c", Analysis_string[a]);
     printf("\t\t");
 }
 
 //输出剩余串
-void SYNTACTIC::Output_remain()
-{
+void SYNTACTIC::Output_remain() {
     int j;
     for (j = 0; j < b; j++) printf(" ");
     for (j = b; j <= l; j++) printf("%c", Remain_string[j]);
@@ -45,9 +43,9 @@ void SYNTACTIC::Output_remain()
 }
 
 void SYNTACTIC::Output_table() {
-    cout << "本分析文法产生式为" << endl;
-    for (int i = 0; i < 10; i++) cout << Pro[i] << endl;
-    cout << "                        LL(1)分析表 " << endl;
+    cout << "\t\t【本分析文法产生式为】" << endl;
+    for (int i = 0; i < 10; i++) cout << "\t\t" << Pro[i] << endl;
+    cout << "                        【LL(1)分析表】 " << endl;
     cout << "\t+\t-\t*\t/\t(\t)\ti\t#" << endl;
     cout << "E\t\t\t\t\tE->TG\t\tE->TG" << endl;
     cout << "T\t\t\t\t\tT->FS\t\tT->FS" << endl;
@@ -98,8 +96,8 @@ void SYNTACTIC::yufafenxi() {
     Table[3][4] = Table[3][5] = s1;
     Table[4][0]               = f1;
     Table[4][3]               = fff;
-    printf("\n请输入由'i','+','*','(',')'构成的以'#'结束的字符串进行分析,\n");
-    printf("要分析的字符串:");
+    printf("\n请输入由'i','+','*','(',')'构成的以'#'结束的字符串进行分析.\n\n");
+    cout << "\t\t请输入：";
     getchar();
     do {
         scanf("%c", &ch);
@@ -115,7 +113,7 @@ void SYNTACTIC::yufafenxi() {
     ch                     = Remain_string[0];
     Analysis_string[top]   = '#';
     Analysis_string[++top] = 'E';
-    printf("步骤\t\t分析栈 \t\t剩余字符 \t\t所用产生式 \n");
+    printf("\n步骤\t\t分析栈 \t\t剩余字符 \t\t所用产生式 \n");
     do {
         x = Analysis_string[top--];  // x为当前栈顶字符
         printf("%d", k++);
@@ -132,45 +130,46 @@ void SYNTACTIC::yufafenxi() {
                 //                getchar();getchar();
                 //                exit(1);
             }
-            if(x==ch){
-                Output_stack();Output_remain();
-                printf("%c匹配\n",ch);
-                ch=Remain_string[++b];flag=0;
-            }
-            else{
-                Output_stack();Output_remain();
-                printf("%c出错\n",ch);
-//                exit(1);
+            if (x == ch) {
+                Output_stack();
+                Output_remain();
+                printf("%c匹配\n", ch);
+                ch   = Remain_string[++b];
+                flag = 0;
+            } else {
+                Output_stack();
+                Output_remain();
+                printf("%c出错\n", ch);
+                //                exit(1);
             }
         } else {
-            for(j=0; j<=4; j++)
-                if(x==VT[j]){
-                    m=j;break;
+            for (j = 0; j <= 4; j++)
+                if (x == VT[j]) {
+                    m = j;
+                    break;
                 }
-            for(j=0; j<=5; j++)
-                if(ch==VN[j]){
-                    n=j;break;
+            for (j = 0; j <= 5; j++)
+                if (ch == VN[j]) {
+                    n = j;
+                    break;
                 }
-            cha=Table[m][n];
-            if(cha.cap!='N'){
-                Output_stack();Output_remain();
-                printf("%c-",cha.cap);
-                for(j=0; j<cha.len; j++)
-                    printf("%c",cha.arr[j]);
+            cha = Table[m][n];
+            if (cha.cap != 'N') {
+                Output_stack();
+                Output_remain();
+                printf("%c-", cha.cap);
+                for (j = 0; j < cha.len; j++) printf("%c", cha.arr[j]);
                 printf("\n");
-                for(j=(cha.len-1); j>=0; j--)
-                    Analysis_string[++top]=cha.arr[j];
-                if(Analysis_string[top]=='^')
-                    top--;
-            }
-            else{
+                for (j = (cha.len - 1); j >= 0; j--)
+                    Analysis_string[++top] = cha.arr[j];
+                if (Analysis_string[top] == '^') top--;
+            } else {
                 Output_stack();Output_remain();
                 printf("%c出错\n",x);
 //                exit(1);
             }
         }
     } while (fin == 0);
-//    printf("111111111111\n");
 }
 
 #endif // SYNTACTIC_H_INCLUDED
