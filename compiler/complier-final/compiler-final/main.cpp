@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
     while (true) {
-        system("cls");
+//        system("cls");
         cout << "\t\t【Mini C 编译器】" << endl;
         printf("\t===========================================\n");
         printf("\t(1)--------词法分析\n");
@@ -40,6 +40,7 @@ int main() {
             default: {
                 printf("[warning]输入错误，请重新输入！程序将会自动重新加载。");
                 Sleep(2000);
+                system("cls");
                 break;
             }
         }

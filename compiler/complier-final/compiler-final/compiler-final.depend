@@ -1,22 +1,24 @@
 # depslib dependency file v1.0
-1591112868 source:c:\users\zhuom\desktop\compiler-final\main.cpp
+1591320471 source:c:\users\zhuom\desktop\compiler-final\main.cpp
 	<bits/stdc++.h>
-	"SYNTACTIC.h"
-	"SEMANTIC.h"
+	<unistd.h>
+	<windows.h>
 	"LEXICAL.h"
+	"SEMANTIC.h"
+	"SYNTACTIC.h"
 
-1591282798 c:\users\zhuom\desktop\compiler-final\syntactic.h
+1591284467 c:\users\zhuom\desktop\compiler-final\syntactic.h
 	<cstring>
-	<string>
 	<iostream>
+	<string>
 
-1591283686 c:\users\zhuom\desktop\compiler-final\semantic.h
+1591284480 c:\users\zhuom\desktop\compiler-final\semantic.h
 	<bits/stdc++.h>
-	<stdlib.h>
 	<stdio.h>
+	<stdlib.h>
 
-1591282354 c:\users\zhuom\desktop\compiler-final\lexical.h
+1591284444 c:\users\zhuom\desktop\compiler-final\lexical.h
 	<cstring>
-	<string>
 	<iostream>
+	<string>
 
